@@ -14,9 +14,9 @@ test:
 run:
 	cargo run --release -- --dev --tmp
 
-.PHONY: run-tmp
-run-tmp:
-	SKIP_WASM_BUILD= cargo run -- --dev --tmp -lruntime=debug
+.PHONY: run-debug
+run-debug:
+	cargo run -- --dev --tmp -lruntime=debug
 
 .PHONY: build
 build:
