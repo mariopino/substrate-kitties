@@ -16,7 +16,7 @@ run:
 
 .PHONY: run-debug
 run-debug:
-	cargo run -- --dev --tmp -lruntime=debug
+	cargo run -- --dev --tmp -lruntime=debug -lpallet_kitties=debug --unsafe-ws-external
 
 .PHONY: build
 build:
