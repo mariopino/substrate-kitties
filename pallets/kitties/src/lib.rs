@@ -51,33 +51,28 @@ decl_module! {
 			// ensure kitty id does not overflow
 			let kitty_id = Self::next_kitty_id();
 			match kitty_id.checked_add(1) {
-				Some(_) => {
-					// will not overflow
+				Some(next_kitty_id) => {
+					// Generate a random 128bit value
+					let payload = (
+						<pallet_randomness_collective_flip::Module<T> as Randomness<T::Hash>>::random_seed(),
+						&sender,
+						<frame_system::Module<T>>::extrinsic_index(),
+					);
+					let dna = payload.using_encoded(blake2_128);
+
+					// Create and store kitty and next kitty id
+					let kitty = Kitty(dna);
+					<Kitties<T>>::insert(&sender, kitty_id, kitty.clone());
+					NextKittyId::put(next_kitty_id);
+
+					// Emit event
+					Self::deposit_event(RawEvent::KittyCreated(sender, kitty_id, kitty))
 				}
 				None => {
 					// Overflow!
 					return Err(Error::<T>::KittiesIdOverflow.into());
 				}
 			};
-
-			// Generate a random 128bit value
-			let payload = (
-				<pallet_randomness_collective_flip::Module<T> as Randomness<T::Hash>>::random_seed(),
-				&sender,
-				<frame_system::Module<T>>::extrinsic_index(),
-			);
-			let dna = payload.using_encoded(blake2_128);
-
-			// Create and store kitty
-			let kitty = Kitty(dna);
-			let kitty_id = Self::next_kitty_id();
-
-			<Kitties<T>>::insert(&sender, kitty_id, kitty.clone());
-
-			NextKittyId::put(kitty_id + 1);
-
-			// Emit event
-			Self::deposit_event(RawEvent::KittyCreated(sender, kitty_id, kitty))
 		}
 	}
 }
