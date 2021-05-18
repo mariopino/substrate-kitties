@@ -2,7 +2,7 @@
 
 use codec::{Encode, Decode};
 use frame_support::{
-	decl_module, decl_storage, decl_event, decl_error, StorageValue, StorageDoubleMap,
+	decl_module, decl_storage, decl_event, decl_error, ensure, StorageValue, StorageDoubleMap,
 	traits::Randomness, RuntimeDebug
 };
 use sp_io::hashing::blake2_128;
@@ -21,6 +21,7 @@ decl_storage! {
 		pub Kitties get(fn kitties): double_map hasher(blake2_128_concat) T::AccountId, hasher(blake2_128_concat) u32 => Option<Kitty>;
 		/// Stores the next kitty id
 		pub NextKittyId get(fn next_kitty_id): u32;
+		KittyOwner get(fn owner_of): map hasher(blake2_128_concat) T::Hash => Option<T::AccountId>;
 	}
 }
 
@@ -82,6 +83,26 @@ decl_module! {
 					return Err(Error::<T>::KittiesIdOverflow.into());
 				}
 			};
+		}
+
+		#[weight = 1000]
+		// Should receive two opposite gender kitty ids
+		pub fn breed(origin, kitty_id_1: T::Hash, kitty_id_2: T::Hash) {
+			let sender = ensure_signed(origin)?;
+
+
+			// Ensure that sender is the owner of both kitties
+            let kitty_1_owner = Self::owner_of(kitty_id_1).ok_or("No owner for kitty 1")?;
+            ensure!(kitty_1_owner == sender, "You do not own kitty 1");
+			let kitty_2_owner = Self::owner_of(kitty_id_2).ok_or("No owner for kitty 2")?;
+            ensure!(kitty_2_owner == sender, "You do not own kitty 2");
+
+			// Read from storage
+
+			// Combine their dna
+
+			// Create
+
 		}
 	}
 }
