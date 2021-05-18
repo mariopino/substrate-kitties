@@ -1,5 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use std::str;
 use codec::{Encode, Decode};
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, StorageValue, StorageDoubleMap,
@@ -59,6 +60,10 @@ decl_module! {
 						<frame_system::Module<T>>::extrinsic_index(),
 					);
 					let dna = payload.using_encoded(blake2_128);
+
+					// Get gender based on first byte of dna, odd => male, even => female
+					let gender = dna[0];
+					println!("gender: {}", gender);
 
 					// Create and store kitty and next kitty id
 					let kitty = Kitty(dna);
