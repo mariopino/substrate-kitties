@@ -60,8 +60,13 @@ decl_module! {
 					);
 					let dna = payload.using_encoded(blake2_128);
 
-					// Get gender based on first byte of dna, odd => male, even => female
-					let gender = dna[0];
+					// Get gender based on first u8 item of dna array, odd => male, even => female
+					let gender;
+					if dna[0]&1 != 0 {
+						gender = "male";
+					} else {
+						gender = "female";
+					}
 					frame_support::debug::native::debug!("gender {:?}", gender);
 
 					// Create and store kitty and next kitty id
