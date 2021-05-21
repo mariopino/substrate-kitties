@@ -100,12 +100,12 @@ decl_module! {
 		pub fn breed(origin, kitty_id_1: u32, kitty_id_2: u32) {
 			let sender = ensure_signed(origin)?;
 
+			// Require different parents
+			ensure!(kitty_id_1 != kitty_id_2, Error::<T>::RequireDifferentParent);
+
 			// Ensure that sender is the owner of both kitties
 			let kitty1 = Self::kitties(sender, kitty_id_1).ok_or(Error::<T>::InvalidKittyId)?;
 			let kitty2 = Self::kitties(sender, kitty_id_2).ok_or(Error::<T>::InvalidKittyId)?;
-
-			// Require different parents
-			ensure!(kitty_id_1 != kitty_id_2, Error::<T>::RequireDifferentParent);
 
 			// TODO: Require different gender parents
 
