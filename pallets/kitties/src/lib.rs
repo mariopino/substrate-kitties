@@ -57,9 +57,9 @@ decl_module! {
 			return dna
 		}
 
-		// fn combine_dna(dna1: u8, dna2: u8, selector: u8) -> u8 {
-		// 	(selector & dna1) | (!selector & dna2)
-		// }
+		fn combine_dna(dna1: u8, dna2: u8, selector: u8) -> u8 {
+			(selector & dna1) | (!selector & dna2)
+		}
 
 		// #[weight = 1000]
 		pub fn create(origin) {
@@ -124,7 +124,8 @@ decl_module! {
 				new_dna[i] = combine_dna(kitty1_dna[i], kitty2_dna[i], dna[i]);
 			}
 
-			Self::insert_kitty(sender, kitty_id, Kitty(new_dna));
+			let kitty = Kitty(new_dna);
+			<Kitties<T>>::insert(&sender, kitty_id, kitty.clone());
 
 		}
 	}
