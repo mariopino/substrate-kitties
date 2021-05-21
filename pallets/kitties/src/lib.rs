@@ -45,6 +45,11 @@ decl_error! {
 
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+
+		// Errors must be initialized if they are used by the pallet.
+		type Error = Error<T>;
+
+		// Events must be initialized if they are used by the pallet.
 		fn deposit_event() = default;
 
 		fn generate_dna(sender: &T::AccountId) -> [u8; 16] {
@@ -97,35 +102,35 @@ decl_module! {
 		}
 
 		// #[weight = 1000]
-		pub fn breed(origin, kitty_id_1: u32, kitty_id_2: u32) {
-			let sender = ensure_signed(origin)?;
+		// pub fn breed(origin, kitty_id_1: u32, kitty_id_2: u32) {
+		// 	let sender = ensure_signed(origin)?;
 
-			// Require different parents
-			ensure!(kitty_id_1 != kitty_id_2, Error::<T>::RequireDifferentParent);
+		// 	// Require different parents
+		// 	ensure!(kitty_id_1 != kitty_id_2, Error::<T>::RequireDifferentParent);
 
-			// Ensure that sender is the owner of both kitties
-			let kitty1 = Self::kitties(sender, kitty_id_1).ok_or(Error::<T>::InvalidKittyId)?;
-			let kitty2 = Self::kitties(sender, kitty_id_2).ok_or(Error::<T>::InvalidKittyId)?;
+		// 	// Ensure that sender is the owner of both kitties
+		// 	let kitty1 = Self::kitties(sender, kitty_id_1).ok_or(Error::<T>::InvalidKittyId)?;
+		// 	let kitty2 = Self::kitties(sender, kitty_id_2).ok_or(Error::<T>::InvalidKittyId)?;
 
-			// TODO: Require different gender parents
+		// 	// TODO: Require different gender parents
 
-			let kitty_id = Self::next_kitty_id();
+		// 	let kitty_id = Self::next_kitty_id();
 
-			let kitty1_dna = kitty1.0;
-			let kitty2_dna = kitty2.0;
+		// 	let kitty1_dna = kitty1.0;
+		// 	let kitty2_dna = kitty2.0;
 
-			// Generate a random 128bit value
-			let dna = Self::generate_dna(&sender);
-			let mut new_dna = [0u8; 16];
+		// 	// Generate a random 128bit value
+		// 	let dna = Self::generate_dna(&sender);
+		// 	let mut new_dna = [0u8; 16];
 
-			// Combine parents and selector to create new kitty
-			for i in 0..kitty1_dna.len() {
-				new_dna[i] = combine_dna(kitty1_dna[i], kitty2_dna[i], dna[i]);
-			}
+		// 	// Combine parents and selector to create new kitty
+		// 	for i in 0..kitty1_dna.len() {
+		// 		new_dna[i] = combine_dna(kitty1_dna[i], kitty2_dna[i], dna[i]);
+		// 	}
 
-			let kitty = Kitty(new_dna);
-			<Kitties<T>>::insert(&sender, kitty_id, kitty.clone());
+		// 	let kitty = Kitty(new_dna);
+		// 	<Kitties<T>>::insert(&sender, kitty_id, kitty.clone());
 
-		}
+		// }
 	}
 }
